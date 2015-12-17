@@ -3,7 +3,7 @@
 *A mostly reasonable approach to CSS and Sass*
 
 ## Table of Contents
-
+  0. [Commandments](#commandments)
   1. [Terminology](#terminology)
     - [Rule Declaration](#rule-declaration)
     - [Selectors](#selectors)
@@ -21,15 +21,57 @@
     - [Placeholders](#placeholders)
     - [Nested selectors](#nested-selectors)
 
-## Terminology
+## Commandments
+1. Let’s use REMS
+  - Using pixels is not responsive and leads to different sizing issues across devices.
+  - if you still want to use pixels you can use rem-calc() function
 
+2. The use of mixins is for ease of development, overwriting a mixin can lead to styling inconsistencies.
+  - if you’re using grid-column(11) and override the width to be 100%, then you could just use grid-column(12) and save yourself the extra line of code.
+
+3. Grid-row and Grid-column are for grid consistency and layout.
+  - The use of grid-row and grid-column are for elements that need to be in line with the grid.
+  - Overuse of grid-row and grid-column is just extra code
+
+4. Use @extend or .class-name when re-using code.
+  - When extending a component either use .p-one hello world on your jade or use @extend .p-one on you sass.
+
+5. Let’s start our elements with the element name and then add  **-wrap for the rest of you elements.
+  - Read and follow the BEM methodology (2 minute read)
+  - ```.header > &__wrap > &__content```
+  - We only use one level when using bem
+
+
+6. Overcomplicated @mixins can confuse other developers same with @extends and @functions.
+  - It might be tempting to build extremely powerful mixins with massive amounts of logic. It’s called over-engineering and most developers suffer from it. 
+  - Don’t over think your code, and above all keep it simple. If a mixin ends up being longer than 20 lines or so, then it should be either split into smaller chunks or completely revised.
+  - Put all these mixins in the mixins file in the utils folder.
+ 
+7. Stick with the pre-defined media queries unless there’s a special case.
+  - Foundation provides us with 4 media queries (small, medium, large, extra-large) use the +breakpoint mixin to use them. Use as many media queries as possible, but don’t overdo it.
+  - You can resize your browser after large-up, which means if you have widows on your copy after large then either put a max-width or let the user resize their own browser.
+
+
+8. Let’s keep the folder structure simple and consistent.
+  - Creating more folder than the ones already in the assigned folder structure is not needed, if you must create another folder, there has to be a good reason for it.
+
+9. Overcomplicated names are hard to understand.
+  - A good naming convention should tell us
+  - what type of thing a class does
+  - where a class can be used;
+  - what (else) a class might be related to.
+  - The naming convention I follow is very simple: hyphen (-) delimited strings, with BEM-like naming for more complex pieces of code with the use the &__ instead of nesting.
+
+10. Keep Sass Simple.
+
+## Terminology
 ### Rule declaration
 
 A “rule declaration” is the name given to a selector (or a group of selectors) with an accompanying group of properties. Here's an example:
 
 ```css
 .listing {
-  font-size: 18px;
+  font-size: 18rem;
   line-height: 1.2;
 }
 ```
@@ -63,7 +105,7 @@ Finally, properties are what give the selected elements of a rule declaration th
 
 ### Formatting
 
-* Use soft tabs (2 spaces) for indentation
+* Use hard tabs for indentation
 * Prefer dashes over camelCasing in class names. Underscores are OK if you're using BEM (see [OOCSS and BEM](#oocss-and-bem) below).
 * Do not use ID selectors
 * When using multiple selectors in a rule declaration, give each selector its own line.
@@ -77,7 +119,7 @@ Finally, properties are what give the selected elements of a rule declaration th
 ```css
 .avatar{
     border-radius:50%;
-    border:2px solid white; }
+    border:2rem solid white; }
 .no, .nope, .not_good {
     // ...
 }
@@ -91,7 +133,7 @@ Finally, properties are what give the selected elements of a rule declaration th
 ```css
 .avatar {
   border-radius: 50%;
-  border: 2px solid white;
+  border: 2rem solid white;
 }
 
 .one,
@@ -137,6 +179,15 @@ We encourage BEM for these reasons:
 </article>
 ```
 
+```sass
+.listing-card
+  &--featured
+  &__title
+  &__content
+```
+
+Compiles to: 
+
 ```css
 .listing-card { }
 .listing-card--featured { }
@@ -164,11 +215,13 @@ We recommend creating JavaScript-specific classes to bind to, prefixed with `.js
 <button class="btn btn-primary js-request-to-book">Request to Book</button>
 ```
 
+Now most of the time we would be using angular directives for any dom manipulation but in case it's a small project
+
 ## Sass
 
 ### Syntax
 
-* Use the `.scss` syntax, never the original `.sass` syntax
+* Use the `.sass` syntax
 * Order your `@extend`, regular CSS and `@include` declarations logically (see below)
 
 ### Ordering of property declarations
@@ -177,60 +230,57 @@ We recommend creating JavaScript-specific classes to bind to, prefixed with `.js
 
     Just as in other OOP languages, it's helpful to know right away that this “class” inherits from another.
 
-    ```scss
-    .btn-green {
-      @extend %btn;
+    ```sass
+    .btn-green
+      @extend %btn
       // ...
-    }
     ```
 
 2. Property declarations
 
     Now list all standard property declarations, anything that isn't an `@extend`, `@include`, or a nested selector.
 
-    ```scss
-    .btn-green {
-      @extend %btn;
-      background: green;
-      font-weight: bold;
+    ```sass
+    .btn-green
+      @extend %btn
+      background: green
+      font-weight: bold
       // ...
-    }
     ```
 
 3. `@include` declarations
 
     Grouping `@include`s at the end makes it easier to read the entire selector, and it also visually separates them from `@extend`s.
 
-    ```scss
-    .btn-green {
-      @extend %btn;
-      background: green;
-      font-weight: bold;
-      @include transition(background 0.5s ease);
+    ```sass
+    .btn-green
+      @extend %btn
+      background: green
+      font-weight: bold
+      @include transition(background 0.5s ease)
       // ...
-    }
+    
     ```
 
 4. Nested selectors
 
     Nested selectors, _if necessary_, go last, and nothing goes after them. Add whitespace between your rule declarations and nested selectors, as well as between adjacent nested selectors. Apply the same guidelines as above to your nested selectors.
 
-    ```scss
-    .btn {
-      @extend %btn;
-      background: green;
-      font-weight: bold;
-      @include transition(background 0.5s ease);
+    ```sass
+    .btn
+      @extend %btn
+      background: green
+      font-weight: bold
+      @include transition(background 0.5s ease)
 
-      .icon {
-        margin-right: 10px;
-      }
-    }
+      .icon
+        margin-right: 10rem
+
     ```
 
 ### Mixins
 
-Mixins, defined via `@mixin` and called with `@include`, should be used sparingly and only when function arguments are necessary. A mixin without function arguments (i.e. `@mixin hide { display: none; }`) is better accomplished using a placeholder selector (see below) in order to prevent code duplication.
+Mixins, defined via `@mixin` and called with `@include`, should be used sparingly and only when function arguments are necessary. A mixin without function arguments (i.e. `@mixin hide display: none`) is better accomplished using a placeholder selector (see below) in order to prevent code duplication.
 
 ### Placeholders
 
@@ -242,19 +292,19 @@ Placeholders are powerful but easy to abuse, especially when combined with neste
 
 ```sass
 // Unless we call `@extend %icon` these properties won't be compiled!
-%icon {
-  font-family: "Airglyphs";
-}
+%icon
+  font-family: "Airglyphs"
 
-.icon-error {
-  @extend %icon;
-  color: red;
-}
 
-.icon-success {
-  @extend %icon;
-  color: green;
-}
+.icon-error
+  @extend %icon
+  color: red
+
+
+.icon-success
+  @extend %icon
+  color: green
+
 ```
 
 **CSS**
@@ -265,28 +315,29 @@ Placeholders are powerful but easy to abuse, especially when combined with neste
   font-family: "Airglyphs";
 }
 
+
 .icon-error {
   color: red;
 }
 
+
 .icon-success {
   color: green;
 }
+
 ```
 
 ### Nested selectors
 
 **Do not nest selectors more than three levels deep!**
 
-```scss
-.page-container {
-  .content {
-    .profile {
+```sass
+.page-container
+  .content 
+    .profile 
       // STOP!
-    }
-  }
-}
 ```
+
 
 When selectors become this long, you're likely writing CSS that is:
 
@@ -294,6 +345,19 @@ When selectors become this long, you're likely writing CSS that is:
 * Overly specific (powerful) *—OR—*
 * Not reusable
 
+**Instead lets use the &__ symbol**
+```sass
+.nav
+  &__logo
+  &__links
+```
+
+This compiles to
+
+```css
+.nav__logo {}
+.nav__links {}
+```
 
 Again: **never nest ID selectors!**
 
